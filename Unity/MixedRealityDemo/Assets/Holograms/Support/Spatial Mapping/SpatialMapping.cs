@@ -36,6 +36,22 @@ public class SpatialMapping : MonoBehaviour
     /// </summary>
     private bool surfaceWorkOutstanding = false;
 
+    public bool IsMeshCreated
+    {
+        get{
+            return surfaces.Count != 0;
+        }
+    }
+
+    public void SetMaterial(Material mat)
+    {
+        DrawMaterial = mat;
+        foreach (var surface in surfaces)
+        {
+            surface.Value.GetComponent<MeshRenderer>().sharedMaterial = mat;
+        }
+    }
+
     void Awake()
     {
         Instance = this;
