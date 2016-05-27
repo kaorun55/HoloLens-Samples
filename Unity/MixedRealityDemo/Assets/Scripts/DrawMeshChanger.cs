@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.VR.WSA.Input;
 using UnityEngine.UI;
 
@@ -20,6 +19,7 @@ public class DrawMeshChanger : MonoBehaviour
     {
         Debug.Log("DrawMeshChanger.Start");
 
+        // エラータップジェスチャーを認識させる
         recognizer = new GestureRecognizer();
         recognizer.TappedEvent += Recognizer_TappedEvent;
         recognizer.StartCapturingGestures();
@@ -35,6 +35,7 @@ public class DrawMeshChanger : MonoBehaviour
     {
         Debug.Log(string.Format("Recognizer_TappedEvent : {0}", isWireframe));
 
+        // マテリアルを変更する
         mapping.SetMaterial(isWireframe ? Occlusion : Wireframe);
         isWireframe = !isWireframe;
     }

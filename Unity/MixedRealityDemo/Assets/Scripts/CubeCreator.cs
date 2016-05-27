@@ -1,19 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
 
-public class CubeCreator : MonoBehaviour {
+public class CubeCreator : MonoBehaviour
+{
     public GameObject cubePrefab;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         StartCoroutine(CreateCube());
-	}
-
-    // Update is called once per frame
-    void Update () {
-	
-	}
+    }
 
     private IEnumerator CreateCube()
     {
