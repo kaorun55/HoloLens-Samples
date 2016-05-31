@@ -138,36 +138,37 @@ public class MeshStatusViewer : MonoBehaviour {
 
         isSendMesh = false;
 
-        string vertexData = "";
-        string triangleData = "";
+        string modelData = "";
 
+        int count = 0;
         var filters = mapping.GetMeshFilters();
-        int offset = 0;
-        //var filter = filters.First();
         foreach (var filter in filters)
         {
             if (filter != null)
             {
                 var mesh = filter.sharedMesh;
 
+                modelData += string.Format("o object.{0}\n", ++count);
+
                 foreach (var vertex in mesh.vertices)
                 {
                     // ローカル座標をワールド座標に変換する
                     var v = filter.transform.TransformPoint(vertex);
-                    vertexData += string.Format("v {0} {1} {2}\n", v.x, v.y, v.z);
+                    modelData += string.Format("v {0} {1} {2}\n", v.x, v.y, v.z);
                 }
+
+                modelData += "\n";
 
                 for (int i = 0; i < mesh.triangles.Length; i += 3)
                 {
-                    triangleData += string.Format("f {0} {1} {2}\n",
-                        mesh.triangles[i + 0] + offset, mesh.triangles[i + 1] + offset, mesh.triangles[i + 2] + offset);
+                    modelData += string.Format("f {0} {1} {2}\n",
+                        mesh.triangles[i + 0] + 1, mesh.triangles[i + 1] + 1, mesh.triangles[i + 2] + 1);
                 }
 
-                offset = mesh.vertices.Length;
+                modelData += "\n";
+                modelData += "\n";
             }
         }
-
-        vertexData += triangleData;
 
 
         Socket socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
@@ -177,7 +178,7 @@ public class MeshStatusViewer : MonoBehaviour {
         {
             if (e.ConnectSocket != null)
             {
-                var data = Encoding.UTF8.GetBytes(vertexData);
+                var data = Encoding.UTF8.GetBytes(modelData);
                 var length = BitConverter.GetBytes(data.Length);
 
                 SocketAsyncEventArgs sendHeaderArgs = new SocketAsyncEventArgs();
