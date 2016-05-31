@@ -29,8 +29,23 @@ public class SpatialMapping : MonoBehaviour
     // If true, Spatial Mapping is enabled. 
     private bool mappingEnabled = true;
 
-    public delegate void UpdateMeshHander(SpatialMapping mapping, SurfaceData bakedData);
-    public event UpdateMeshHander OnUpdateMesh;
+    private List<MeshFilter> surfaceObjectMeshFilters = new List<MeshFilter>();
+
+    virtual public List<MeshFilter> GetMeshFilters()
+    {
+        List<MeshFilter> meshFilters = new List<MeshFilter>();
+
+        foreach (MeshFilter filter in surfaceObjectMeshFilters)
+        {
+            if (filter != null && filter.sharedMesh != null && filter.sharedMesh.vertexCount > 2)
+            {
+                meshFilters.Add(filter);
+            }
+        }
+
+        return meshFilters;
+    }
+
 
     /// <summary>
     /// To prevent too many meshes from being generated at the same time, we will
@@ -90,6 +105,8 @@ public class SpatialMapping : MonoBehaviour
                     surfaces[surfaceId.handle] = surface;
 
                     surface.transform.parent = transform;
+
+                    surfaceObjectMeshFilters.Add(surface.GetComponent<MeshFilter>());
                 }
 
                 SurfaceData smsd = new SurfaceData(
@@ -145,12 +162,6 @@ public class SpatialMapping : MonoBehaviour
     private void Observer_OnDataReady(SurfaceData bakedData, bool outputWritten, float elapsedBakeTimeSeconds)
     {
         surfaceWorkOutstanding = false;
-
-        var hander = OnUpdateMesh;
-        if (hander != null)
-        {
-            hander(this, bakedData);
-        }
     }
 
     public void SetMappingEnabled(bool isEnabled)
