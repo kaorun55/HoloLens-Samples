@@ -6,6 +6,12 @@ using UnityEngine.VR.WSA.Input;
 using UnityEngine.VR.WSA;
 using System;
 
+#if !UNITY_EDITOR
+using Windows.Storage;
+using Windows.System;
+using System.Runtime.InteropServices.WindowsRuntime;
+#endif
+
 public class MeshStatusViewer : MonoBehaviour {
     SpatialMapping mapping;
     GestureRecognizer recognizer;
@@ -70,6 +76,35 @@ public class MeshStatusViewer : MonoBehaviour {
             cubes[5].transform.localPosition = new Vector3(min.x, max.y, max.z);
             cubes[6].transform.localPosition = new Vector3(max.x, max.y, max.z);
             cubes[7].transform.localPosition = new Vector3(max.x, max.y, min.z);
+
+#if !UNITY_EDITOR
+            var ao = KnownFolders.PicturesLibrary.CreateFileAsync("mapping.jpg", CreationCollisionOption.ReplaceExisting);
+            ao.Completed = async delegate {
+                if (ao.Status == Windows.Foundation.AsyncStatus.Completed)
+                {
+                    var file = ao.GetResults();
+                    Debug.Log(file.Name);
+
+                    using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
+                    {
+                        var imageBuffer = new byte[stream.Size];
+                        await stream.WriteAsync(imageBuffer.AsBuffer());
+                    }
+
+                    Debug.Log("write comlete");
+                }
+                else if(ao.Status == Windows.Foundation.AsyncStatus.Error)
+                {
+                     Debug.Log(ao.ErrorCode.Message);
+                }
+            };
+
+            while (ao.Status == Windows.Foundation.AsyncStatus.Started)   // …… （3）
+            {
+                yield return new WaitForEndOfFrame();
+            }
+
+#endif
 
             yield return new WaitForSeconds(1);
         }
