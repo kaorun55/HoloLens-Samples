@@ -111,6 +111,7 @@ public class MeshStatusViewer : MonoBehaviour {
 
         string modelData = "";
 
+        int offset = 0;
         int count = 0;
         var filters = mapping.GetMeshFilters();
 
@@ -140,11 +141,15 @@ public class MeshStatusViewer : MonoBehaviour {
                 for (int i = 0; i < mesh.triangles.Length; i += 3)
                 {
                     modelData += string.Format("f {0} {1} {2}\n",
-                        mesh.triangles[i + 0] + 1, mesh.triangles[i + 1] + 1, mesh.triangles[i + 2] + 1);
+                        mesh.triangles[i + 0] + 1 + offset,
+                        mesh.triangles[i + 1] + 1 + offset,
+                        mesh.triangles[i + 2] + 1 + offset);
                 }
 
                 modelData += "\n";
                 modelData += "\n";
+
+                offset += mesh.vertexCount;
             }
         }
 
