@@ -24,7 +24,7 @@ public class MeshStatusViewer : MonoBehaviour {
 
     public GameObject[] cubes;
 
-    bool isSendMesh = false;
+    bool isSaveMesh = false;
 
     // Use this for initialization
     void Start () {
@@ -83,36 +83,7 @@ public class MeshStatusViewer : MonoBehaviour {
             cubes[6].transform.localPosition = new Vector3(max.x, max.y, max.z);
             cubes[7].transform.localPosition = new Vector3(max.x, max.y, min.z);
 
-            SendMesh();
-
-#if !UNITY_EDITOR
-            var ao = KnownFolders.PicturesLibrary.CreateFileAsync("mapping.jpg", CreationCollisionOption.ReplaceExisting);
-            ao.Completed = async delegate {
-                if (ao.Status == Windows.Foundation.AsyncStatus.Completed)
-                {
-                    var file = ao.GetResults();
-                    //Debug.Log(file.Name);
-
-                    using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
-                    {
-                        var imageBuffer = new byte[stream.Size];
-                        await stream.WriteAsync(imageBuffer.AsBuffer());
-                    }
-
-                    //Debug.Log("write comlete");
-                }
-                else if(ao.Status == Windows.Foundation.AsyncStatus.Error)
-                {
-                     Debug.Log(ao.ErrorCode.Message);
-                }
-            };
-
-            while (ao.Status == Windows.Foundation.AsyncStatus.Started)   // …… （3）
-            {
-                yield return new WaitForEndOfFrame();
-            }
-
-#endif
+            yield return SaveMesh();
 
             yield return new WaitForSeconds(1);
         }
@@ -122,30 +93,36 @@ public class MeshStatusViewer : MonoBehaviour {
     {
         mapping.DrawVisualMeshes = !mapping.DrawVisualMeshes;
 
-        isSendMesh = true;
+        isSaveMesh = true;
     }
 
     // Update is called once per frame
     void Update () {
     }
 
-    void SendMesh()
+    IEnumerator SaveMesh()
     {
-        if (!isSendMesh)
+        if (!isSaveMesh)
         {
-            return;
+            yield break;
         }
 
-        isSendMesh = false;
+        isSaveMesh = false;
 
         string modelData = "";
 
         int count = 0;
         var filters = mapping.GetMeshFilters();
+
+#if false
+        var filter = filters.First();
+#else
         foreach (var filter in filters)
+#endif
         {
             if (filter != null)
             {
+                // OBJ形式で出力する
                 var mesh = filter.sharedMesh;
 
                 modelData += string.Format("o object.{0}\n", ++count);
@@ -159,6 +136,7 @@ public class MeshStatusViewer : MonoBehaviour {
 
                 modelData += "\n";
 
+                // 面を書く(これがうまくできてないらしい)
                 for (int i = 0; i < mesh.triangles.Length; i += 3)
                 {
                     modelData += string.Format("f {0} {1} {2}\n",
@@ -170,40 +148,31 @@ public class MeshStatusViewer : MonoBehaviour {
             }
         }
 
+#if !UNITY_EDITOR
+            var ao = KnownFolders.CameraRoll.CreateFileAsync("mapping.obj", CreationCollisionOption.GenerateUniqueName);
+            ao.Completed = async delegate {
+                if (ao.Status == Windows.Foundation.AsyncStatus.Completed)
+                {
+                    var file = ao.GetResults();
 
-        Socket socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
-        SocketAsyncEventArgs args = new SocketAsyncEventArgs();
-        args.RemoteEndPoint = new IPEndPoint(IPAddress.Parse("192.168.11.26"), 44444);
-        args.Completed += (s, e) =>
-        {
-            if (e.ConnectSocket != null)
+                    using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
+                    {
+                        var imageBuffer = Encoding.ASCII.GetBytes(modelData);
+                        await stream.WriteAsync(imageBuffer.AsBuffer());
+                    }
+
+                    Debug.Log("write comlete");
+                }
+                else if(ao.Status == Windows.Foundation.AsyncStatus.Error)
+                {
+                     Debug.Log(ao.ErrorCode.Message);
+                }
+            };
+
+            while (ao.Status == Windows.Foundation.AsyncStatus.Started)
             {
-                var data = Encoding.UTF8.GetBytes(modelData);
-                var length = BitConverter.GetBytes(data.Length);
-
-                SocketAsyncEventArgs sendHeaderArgs = new SocketAsyncEventArgs();
-                sendHeaderArgs.Completed += (ss, ee) => {
-                    Debug.Log("Send Header");
-                    SocketAsyncEventArgs sendDataArgs = new SocketAsyncEventArgs();
-                    sendDataArgs.Completed += (sss, eee) => {
-                        Debug.Log("Complete");
-                    };
-
-                    sendDataArgs.SetBuffer(data, 0, data.Length);
-                    socket.SendAsync(sendDataArgs);
-                };
-                sendHeaderArgs.SetBuffer(length, 0, length.Length);
-                socket.SendAsync(sendHeaderArgs);
-
-
-                Debug.Log("Success");
+                yield return new WaitForEndOfFrame();
             }
-            else
-            {
-                Debug.Log("Error");
-            }
-        };
-        Debug.Log("Connect");
-        socket.ConnectAsync(args);
+#endif
     }
 }
