@@ -1,4 +1,5 @@
 ﻿// http://tsubakit1.hateblo.jp/entry/2016/04/26/233000
+// https://www.reddit.com/r/Unity2D/comments/3h7qt3/offscreen_enemy_indicator_script_in_comments/?
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
