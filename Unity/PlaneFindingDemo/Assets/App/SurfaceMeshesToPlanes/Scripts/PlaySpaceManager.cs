@@ -65,6 +65,8 @@ public class PlaySpaceManager : Singleton<PlaySpaceManager>
             }
             else
             {
+                Debug.Log("CreatePlanes");
+
                 // The user should be done scanning their environment,
                 // so start processing the spatial mapping data...
 
@@ -161,8 +163,10 @@ public class PlaySpaceManager : Singleton<PlaySpaceManager>
     {
         // Generate planes based on the spatial map.
         SurfaceMeshesToPlanes surfaceToPlanes = SurfaceMeshesToPlanes.Instance;
+        Debug.Log("CreatePlanes : " + surfaceToPlanes.enabled);
         if (surfaceToPlanes != null && surfaceToPlanes.enabled)
         {
+            Debug.Log("MakePlanes");
             surfaceToPlanes.MakePlanes();
         }
     }

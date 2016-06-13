@@ -111,6 +111,8 @@ namespace HoloToolkit.Unity
         {
             if (!makingPlanes)
             {
+                Debug.Log("StartCoroutine(MakePlanesRoutine())");
+
                 makingPlanes = true;
                 // Processing the mesh can be expensive...
                 // We use Coroutine to split the work across multiple frames and avoid impacting the frame rate too much.
@@ -149,6 +151,8 @@ namespace HoloToolkit.Unity
         /// <returns>Yield result.</returns>
         private IEnumerator MakePlanesRoutine()
         {
+            Debug.Log("Start MakePlanesRoutine.");
+
             // Remove any previously existing planes, as they may no longer be valid.
             for (int index = 0; index < ActivePlanes.Count; index++)
             {
