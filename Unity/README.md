@@ -11,8 +11,20 @@
 ## GestureDemo
  - ジェスチャー検出のデモです。
 
+## MeshDemo
+ - 環境マッピングのデモです。
+ - 検出したマッピング情報をOBJファイルでカメラロールに出力します。
 
 ## MixedRealityDemo
  - MRのデモです。
  - 目の前でブロックが落ちてきます。
  - しばらくすると、メッシュが生成され、ブロックがそこに落ちてきます。
+
+## OffScreenEffect
+ - 視野外に出たオブジェクトを矢印で示すデモです。
+
+## PlaneFindingDemo
+ - 平面検出のデモです。
+
+## WorldAnchorDemo
+ - World Anchorのデモです。
