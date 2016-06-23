@@ -9,11 +9,4 @@ public class SpatialSound : MonoBehaviour
         audio.spatialize = true;
         audio.spatialBlend = 1.0f;
     }
-
-
-
-    // Use this for initialization
-    void Start()
-    {
-    }
 }
