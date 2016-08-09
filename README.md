@@ -1,3 +1,3 @@
-# HoloLens-Samles
+# HoloLens-Samples
 ## ライセンス
 MITライセンスとします
