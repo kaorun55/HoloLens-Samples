@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.VR.WSA.Input;
 using System;
+using UnityEngine.VR.WSA.Input;
 using HoloToolkit.Unity;
 
-public class Manipulation : MonoBehaviour {
-    private GestureRecognizer gestureRecognizer;
+public class Manipulation : MonoBehaviour, IManipulationReciever {
 
     Vector3 oldPosition = Vector3.zero;
 
@@ -13,27 +12,15 @@ public class Manipulation : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        gestureRecognizer = new GestureRecognizer();
-        gestureRecognizer.SetRecognizableGestures(GestureSettings.ManipulationTranslate);
+	
+	}
+	
+	// Update is called once per frame
+	void Update () {
+	
+	}
 
-        gestureRecognizer.ManipulationStartedEvent += GestureRecognizer_ManipulationStartedEvent;
-        gestureRecognizer.ManipulationUpdatedEvent += GestureRecognizer_ManipulationUpdatedEvent;
-        gestureRecognizer.ManipulationCompletedEvent += GestureRecognizer_ManipulationCompletedEvent;
-        gestureRecognizer.ManipulationCanceledEvent += GestureRecognizer_ManipulationCompletedEvent;
-
-        gestureRecognizer.StartCapturingGestures();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
-    void OnSelect()
-    {
-    }
-
-    private void GestureRecognizer_ManipulationStartedEvent(InteractionSourceKind source, Vector3 cumulativeDelta, Ray headRay)
+    public void OnManipulationStarted(InteractionSourceKind source, Vector3 cumulativeDelta, Ray headRay)
     {
         if (GestureManager.Instance.FocusedObject == gameObject)
         {
@@ -45,7 +32,7 @@ public class Manipulation : MonoBehaviour {
         }
     }
 
-    private void GestureRecognizer_ManipulationUpdatedEvent(InteractionSourceKind source, Vector3 cumulativeDelta, Ray headRay)
+    public void OnManipulationUpdated(InteractionSourceKind source, Vector3 cumulativeDelta, Ray headRay)
     {
         if (isHold)
         {
@@ -56,9 +43,13 @@ public class Manipulation : MonoBehaviour {
         }
     }
 
-    private void GestureRecognizer_ManipulationCompletedEvent(InteractionSourceKind source, Vector3 cumulativeDelta, Ray headRay)
+    public void OnManipulationCompleted(InteractionSourceKind source, Vector3 cumulativeDelta, Ray headRay)
+    {
+        isHold = false;
+    }
+
+    public void OnManipulationCanceled(InteractionSourceKind source, Vector3 cumulativeDelta, Ray headRay)
     {
         isHold = false;
     }
 }
-
