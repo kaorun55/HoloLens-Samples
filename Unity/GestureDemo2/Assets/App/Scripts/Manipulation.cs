@@ -8,8 +8,6 @@ public class Manipulation : MonoBehaviour, IManipulationReciever {
 
     Vector3 oldPosition = Vector3.zero;
 
-    bool isHold = false;
-
     // Use this for initialization
     void Start () {
 	
@@ -22,34 +20,24 @@ public class Manipulation : MonoBehaviour, IManipulationReciever {
 
     public void OnManipulationStarted(InteractionSourceKind source, Vector3 cumulativeDelta, Ray headRay)
     {
-        if (GestureManager.Instance.FocusedObject == gameObject)
-        {
-            //Debug.Log("Manipulation Started : " + string.Format("{0},{1},{2}", cumulativeDelta.x, cumulativeDelta.y, cumulativeDelta.z));
+        //Debug.Log("Manipulation Started : " + string.Format("{0},{1},{2}", cumulativeDelta.x, cumulativeDelta.y, cumulativeDelta.z));
 
-            isHold = true;
-
-            oldPosition = cumulativeDelta;
-        }
+        oldPosition = cumulativeDelta;
     }
 
     public void OnManipulationUpdated(InteractionSourceKind source, Vector3 cumulativeDelta, Ray headRay)
     {
-        if (isHold)
-        {
-            //Debug.Log("Manipulation Updated : " + string.Format("{0},{1},{2}", cumulativeDelta.x, cumulativeDelta.y, cumulativeDelta.z ));
-            transform.Translate(cumulativeDelta - oldPosition);
+        //Debug.Log("Manipulation Updated : " + string.Format("{0},{1},{2}", cumulativeDelta.x, cumulativeDelta.y, cumulativeDelta.z ));
 
-            oldPosition = cumulativeDelta;
-        }
+        transform.Translate(cumulativeDelta - oldPosition);
+        oldPosition = cumulativeDelta;
     }
 
     public void OnManipulationCompleted(InteractionSourceKind source, Vector3 cumulativeDelta, Ray headRay)
     {
-        isHold = false;
     }
 
     public void OnManipulationCanceled(InteractionSourceKind source, Vector3 cumulativeDelta, Ray headRay)
     {
-        isHold = false;
     }
 }
