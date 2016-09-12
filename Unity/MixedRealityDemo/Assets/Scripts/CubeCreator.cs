@@ -27,12 +27,12 @@ public class CubeCreator : MonoBehaviour
     {
         // カメラの正面から落とす
         float r = 1.5f;
-        var theta = transform.rotation.eulerAngles.y * Mathf.Deg2Rad;
+        var theta = Camera.main.transform.rotation.eulerAngles.y * Mathf.Deg2Rad;
         var x = r * Mathf.Sin(theta);
         var z = r * Mathf.Cos(theta);
 
         Instantiate(cubePrefab,
-            new Vector3(x, 1, z),
+            new Vector3(x, 0, z),
             Quaternion.Euler(0, transform.rotation.eulerAngles.y, z));
     }
 }
